@@ -40,10 +40,12 @@ int main( int argc, char* argv[] ) {
     ofstream outfile(outFileStr);
 
     //loop through each line and output the results to outfile
+    bool header = true;
     while (pairfile) {
         string s;
         // get the next line
         if (!getline(pairfile, s)) break;
+        if (header){ header = false; continue; }
         istringstream ss(s);
         vector<string> record;
         while (ss) {
