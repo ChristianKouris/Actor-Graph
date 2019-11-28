@@ -11,6 +11,8 @@
 #define ACTORGRAPH_HPP
 
 #include <iostream>
+#include "ActorNode.hpp"
+#include "MovieNode.hpp"
 
 // Maybe include some data structures here
 
@@ -22,6 +24,8 @@ using namespace std;
 class ActorGraph {
   protected:
     // Maybe add class data structure(s) here
+    unordered_map<string, ActorNode*> actorMap;
+    unordered_map<string, MovieNode*> movieMap;
 
   public:
     /**
@@ -42,6 +46,9 @@ class ActorGraph {
      * return true if file was loaded sucessfully, false otherwise
      */
     bool loadFromFile(const char* in_filename, bool use_weighted_edges);
+    
+    /* TODO */
+    string findClosestActors(string actorStart, string actorEnd);
     
 };
 
