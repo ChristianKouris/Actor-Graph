@@ -45,7 +45,10 @@ int main( int argc, char* argv[] ) {
         string s;
         // get the next line
         if (!getline(pairfile, s)) break;
-        if (header){ header = false; continue; }
+        if (header){ 
+            outfile << "(actor)--[movie#@year]-->(actor)--..." << endl;
+            header = false; 
+            continue; }
         istringstream ss(s);
         vector<string> record;
         while (ss) {

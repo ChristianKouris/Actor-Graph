@@ -1,5 +1,6 @@
 /**
- * TODO
+ * This file defines a class that represents a ActorNode. The ActorNode 
+ * represents a vertex in the Actor graph where the movies are the edges.
  * Author: Christian Kouris
  * Email: ckouris@ucsd.edu
  * Sources: cplusplus doc for: std::unordered_map, std::string, 
@@ -15,6 +16,11 @@ using namespace std;
 
 class MovieNode;
 
+/*
+ * The Actor Node class represents a vertex in the ActorGraph class. The class
+ * holds an actor's name along with all of the movies they were in. The other 
+ * members are used to help the path finding in the graph.
+ */
 class ActorNode {
 
   public:

@@ -1,7 +1,6 @@
 /*
- * ActorGraph.cpp
- * Author: <YOUR NAME HERE>
- * Date:   <DATE HERE>
+ * Author: Christian Kouris
+ * Email: ckouris@ucsd.edu
  * Sources: cplusplus documentation for: unordered_map, queue, string, vector,
  *          to_string
  */
@@ -112,9 +111,17 @@ bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) 
 
     return true;
 }
-    
-/* Copy header from hpp file */
+     
+/* This method uses a breadth first search in order to find the 
+ * shortest path between two actors. The return value is a formatted
+ * string detailing the path from actorStart to actorEnd. The path
+ * will have information about the connected movies and actors.
+ * Parameter: actorStart - the actor that will be the start of the search
+ * Parameter: actorEnd - the actor that will be found in the search
+ */
 string ActorGraph::findClosestActors(string actorStart, string actorEnd) {
+
+    if( actorMap.find(actorStart) == actorMap.end() ) { return ""; }
 
     //create a queue and add the starting actor to it
     ActorNode* curActor = 0;
@@ -212,5 +219,21 @@ string ActorGraph::findClosestActors(string actorStart, string actorEnd) {
 
     //return the string
     return outStr;
+
+}
+
+/* Destructor for the ActorGraph */
+ActorGraph::~ActorGraph() {
+    
+    auto actorIter = actorMap.begin();
+    auto movieIter = movieMap.begin();
+    while( actorIter != actorMap.end() ) {
+        delete actorIter->second;
+        actorIter++;
+    }
+    while( movieIter != movieMap.end() ) {
+        delete movieIter->second;
+        movieIter++;
+    } 
 
 }
