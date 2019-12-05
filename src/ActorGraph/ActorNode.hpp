@@ -33,15 +33,37 @@ class ActorNode {
     MovieNode* previous;
     //has been checked in the BFS already
     bool checked;
+    //the number of links this node has with a specified actor
+    unsigned int links;
+    //distance from the starting node
+    unsigned int dist;
 
     /* Constructor that initializes the ActorNode */
     ActorNode(string name) : name(name) {
         movies = std::vector<MovieNode*>();
         previous = 0;
         checked = false;
+        links = 0;
+        dist = (unsigned)-1;
     }
 
 };
 
+struct CompareLinks {
+    bool operator()( const ActorNode* a1, const ActorNode* a2 ) {
 
+        if( a1->links == a2->links ) {
+            return a1->name < a2->name;
+        }
+
+        return a2->links < a1->links;
+
+    }
+};
+
+struct CompareDist {
+    bool operator()( const ActorNode* a1, const ActorNode* a2 ) {
+        return a2->dist < a1->dist;
+    }
+};
 #endif  // ACTORNODE_HPP

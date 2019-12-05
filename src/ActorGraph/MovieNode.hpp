@@ -33,12 +33,15 @@ class MovieNode {
     ActorNode* previous;
     //has been checked in the BFS already
     bool checked;
+    //the weight of the edge which will be 2019 - year + 1
+    unsigned int weight;
 
     /* Constructor that initializes the MovieNode */
     MovieNode(string name, unsigned int year) : name(name), year(year) {
         actors = std::vector<ActorNode*>();
         previous = 0;
         checked = false;
+        weight = 1 + 2019 - year;
     }
 
 };

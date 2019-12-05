@@ -2,7 +2,8 @@
  * Author: Christian Kouris
  * Email: ckouris@ucsd.edu
  * Sources: cplusplus documentation for: unordered_map, queue, string, vector,
- *          to_string
+ *          to_string, priority_queue, 
+ *          stepik Dijkstra's AlgorithmKruskal's algorithm
  */
 
 #include "ActorGraph.hpp"
@@ -15,6 +16,7 @@
 #include <queue>
 #include <stack>
 #include <utility>
+#include <algorithm>
 
 using namespace std;
 
@@ -22,23 +24,19 @@ using namespace std;
  * Constructor of the Actor graph
  */ 
 ActorGraph::ActorGraph(void) {
-
     actorMap = std::unordered_map<string, ActorNode*>();
     movieMap = std::unordered_map<string, MovieNode*>();
-
 }
 
-/** You can modify this method definition as you wish
- *
- * Load the graph from a tab-delimited file of actor->movie relationships.
- *
- * in_filename - input filename
- * use_weighted_edges - if true, compute edge weights as 1 + (2019 - movie_year),
- *                      otherwise all edge weights will be 1
- *
- * return true if file was loaded sucessfully, false otherwise
+/** 
+ * This function takes in a formated file which contains a line seperated
+ * list of an actor, a movie they played in, and the year of the movie and
+ * builds either a weighted or unweighted graph based on the info. The
+ * weight of the movie is how old the movie is which is 2020-year.
+ * Parameter: in_filename - the name of the file containing the info
+ * Parameter: use_weighted_edges - whether the graph is weighted or not
  */
-bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) {
+bool ActorGraph::loadFromFile(const char* in_filename) {
 
     // Initialize the file stream
     ifstream infile(in_filename);
@@ -111,8 +109,9 @@ bool ActorGraph::loadFromFile(const char* in_filename, bool use_weighted_edges) 
 
     return true;
 }
-     
-/* This method uses a breadth first search in order to find the 
+
+/**
+ * This method uses a breadth first search in order to find the 
  * shortest path between two actors. The return value is a formatted
  * string detailing the path from actorStart to actorEnd. The path
  * will have information about the connected movies and actors.
@@ -124,13 +123,14 @@ string ActorGraph::findClosestActors(string actorStart, string actorEnd) {
     if( actorMap.find(actorStart) == actorMap.end() ) { return ""; }
 
     //create a queue and add the starting actor to it
-    ActorNode* curActor = 0;
+    ActorNode* curActor = actorMap.find(actorStart)->second;
     queue<ActorNode*> actorQueue = std::queue<ActorNode*>();
-    actorQueue.push( actorMap.find(actorStart)->second );
+    actorQueue.push( curActor );
 
     //create a list to clean up the movies and the actors
     vector<ActorNode*> actorCleanup = std::vector<ActorNode*>();
     vector<MovieNode*> movieCleanup = std::vector<MovieNode*>();
+    actorCleanup.push_back( curActor );
 
     //Do A BFS to find the end actor
     while( !actorQueue.empty() ) {
@@ -204,6 +204,7 @@ string ActorGraph::findClosestActors(string actorStart, string actorEnd) {
         string formatStr = "--[" + movieName + "#@" + movieYear + 
                            "]-->(" + actorName + ")";
         outStr += formatStr;
+        actorOrder.pop();
 
     }
     
@@ -219,6 +220,218 @@ string ActorGraph::findClosestActors(string actorStart, string actorEnd) {
 
     //return the string
     return outStr;
+
+}
+
+string ActorGraph::findWeightedActors(string actorStart, string actorEnd) {
+
+    if( actorMap.find(actorStart) == actorMap.end() ) { return ""; }
+
+    //create a priority queue and add the starting actor to it
+    ActorNode* curActor = 0;
+    priority_queue<ActorNode*, vector<ActorNode*>, CompareDist> actorQueue =
+        std::priority_queue<ActorNode*, vector<ActorNode*>, CompareDist>();
+
+    ActorNode* tmpActor = actorMap.find(actorStart)->second;
+    tmpActor->dist = 0;
+    actorQueue.push( tmpActor );
+
+    //create a list to clean up the movies and the actors
+    vector<ActorNode*> actorCleanup = std::vector<ActorNode*>();
+    vector<MovieNode*> movieCleanup = std::vector<MovieNode*>();
+    actorCleanup.push_back( tmpActor );
+
+    //use Dijkstra's algorithm
+    while( !actorQueue.empty() ) {
+
+        //pop the curActor from the queue, set it as visited
+        curActor = actorQueue.top(); actorQueue.pop();
+        if( curActor->name == actorEnd ) { break; }
+        if( curActor->checked == true ) { continue; }
+        curActor->checked = true;
+        
+        //go through each movie and add the actors to the queue
+        for( unsigned int i = 0; i < curActor->movies.size(); i++ ) {
+
+            MovieNode* curMov = curActor->movies.at(i);
+            if( curMov->checked == true ) { continue; }
+            
+            //add the actors in the movies to the queue
+            for( unsigned int j = 0; j < curMov->actors.size(); i++ ) {
+                
+                tmpActor= curMov->actors.at(j);
+                unsigned int totalDist = curActor->dist + curMov->weight;
+                if( totalDist < tmpActor->dist ) {
+                    tmpActor->dist = totalDist;
+                    tmpActor->previous = curMov;
+                    actorQueue.push( tmpActor );
+                    actorCleanup.push_back( tmpActor );
+                }
+            
+            }
+            
+            //set the previous actor and the checked to 1
+            curMov->previous = curActor;
+            curMov->checked = true;
+            movieCleanup.push_back( curMov );
+
+        }
+
+    }
+
+    //check to see if we even found the node at all
+    if( curActor == 0 || curActor->name != actorEnd ) {
+        //clean up the actor nodes and movie nodes
+        for( unsigned int i = 0; i < actorCleanup.size(); i++ ) {
+            actorCleanup[i]->previous = 0;
+            actorCleanup[i]->checked = false;
+        }
+        for( unsigned int i = 0; i < movieCleanup.size(); i++ ) {
+            movieCleanup[i]->previous = 0;
+            movieCleanup[i]->checked = false;
+        }
+        return "";
+    }
+    
+    //backtrack to the start node and add each actor and movie to a stack
+    stack<pair<ActorNode*,MovieNode*>> actorOrder = 
+        std::stack<std::pair<ActorNode*,MovieNode*>>();
+    while( curActor->previous != 0 ) {
+    
+        MovieNode* movieEdge = curActor->previous;
+        //add the node and edge to a pair and to the stack
+        pair<ActorNode*,MovieNode*> stackPair = 
+            std::pair<ActorNode*,MovieNode*>( curActor, movieEdge );
+        actorOrder.push( stackPair );
+        curActor = curActor->previous->previous;
+
+    }
+    
+    //start with the curNode which should be the starting actor
+    string outStr = "(" + curActor->name + ")";
+    //go through each pair in the stack and add it to the string
+    while( !actorOrder.empty() ) {
+
+        string actorName = actorOrder.top().first->name;
+        string movieName = actorOrder.top().second->name;
+        string movieYear = to_string(actorOrder.top().second->year);
+        string formatStr = "--[" + movieName + "#@" + movieYear + 
+                           "]-->(" + actorName + ")";
+        outStr += formatStr;
+        actorOrder.pop();
+
+    }
+    
+    //clean up the actor nodes and movie nodes
+    for( unsigned int i = 0; i < actorCleanup.size(); i++ ) {
+        actorCleanup[i]->previous = 0;
+        actorCleanup[i]->checked = false;
+    }
+    for( unsigned int i = 0; i < movieCleanup.size(); i++ ) {
+        movieCleanup[i]->previous = 0;
+        movieCleanup[i]->checked = false;
+    }
+
+    //return the string
+    return outStr;
+
+}
+
+/**
+ * This method predicts what future links the given actor might have with
+ * all of the other actors in the graph. The method seaches all of the
+ * actors that have worked on the same movies as the input actor and makes
+ * a sorted list of actors that have direclty collaborated and have not.
+ * These two lists, directly collaborated and haven't collaborated, are
+ * returned in a pair.
+ * Parameter: actor - the actor which we want to find all of the links of
+ */
+pair<vector<string>, vector<string>> 
+    ActorGraph::getPredictedLinks( string actor ) {
+    
+    //check to see if the actor isn't in the map, return empty arrays if so
+    if( actorMap.find( actor ) == actorMap.end() ) {
+        vector<string> noStr = std::vector<string>();
+        return pair<vector<string>, vector<string>>(noStr, noStr);
+    }
+    
+    vector<ActorNode*> collabActors = std::vector<ActorNode*>();
+    vector<ActorNode*> futureActors = std::vector<ActorNode*>();
+    vector<MovieNode*> movieCleanup = std::vector<MovieNode*>();
+    //loop through all of the actors immediately connected to the given actor
+    ActorNode* actorNode = actorMap.find( actor )->second;
+    for( unsigned int i = 0; i < actorNode->movies.size(); i++ ) {
+        MovieNode* movieNode = actorNode->movies.at(i);
+        for( unsigned int j; j < movieNode->actors.size(); j++ ) {
+            ActorNode* tmp = movieNode->actors.at(j);
+            if( tmp->links == 0 ) {
+                collabActors.push_back( tmp );
+            }
+            tmp->links++;
+        }
+        movieNode->checked = true;
+        movieCleanup.push_back( movieNode );
+    }
+
+    //sort the list of actor nodes
+    std::sort( collabActors.begin(), collabActors.end(), CompareLinks() );
+    
+    //loop through all of the first generation actors
+    for( unsigned int i = 0; i < collabActors.size(); i++ ) {
+
+        ActorNode* curActor = collabActors[i];
+        //loop through each movie in curActor
+        for( unsigned int j = 0; j < curActor->movies.size(); j++ ) {
+
+            MovieNode* movieNode = curActor->movies.at(j);
+            if( movieNode->checked == true ) {
+                continue;
+            }
+            //loop through each actor for each movie for each first gen actor
+            for( unsigned int k = 0; k < movieNode->actors.size(); k++ ) {
+    
+                ActorNode* tmp = movieNode->actors.at(k);
+                if( tmp->links == 0 ) {
+                    futureActors.push_back( tmp );
+                }
+                //instead of adding by one, add by cur actor # links
+                tmp->links += curActor->links;
+
+            }
+
+        }
+
+    } // end add future actors links
+
+    //sort the second list
+    std::sort( futureActors.begin(), futureActors.end(), CompareLinks() );
+    
+    //add the string vectors in order to return
+    vector<string> collabStr = std::vector<string>();
+    vector<string> futureStr = std::vector<string>();
+
+    //add the actor names from the list to a vector
+    for( unsigned int i = 0; i < 4; i++ ) {
+        if( i < collabActors.size() ) {
+            collabStr.push_back( collabActors[i]->name );
+        }
+        if( i < futureActors.size() ) {
+            futureStr.push_back( futureActors[i]->name );
+        }
+    }
+
+    //reset all the values that we've changed
+    for( unsigned int i = 0; i < collabActors.size(); i++ ) {
+        collabActors[i]->links = 0;
+    }
+    for( unsigned int i = 0; i < futureActors.size(); i++ ) {
+        futureActors[i]->links = 0;
+    }
+    for( unsigned int i = 0; i < movieCleanup.size(); i++ ) {
+        movieCleanup[i]->checked = false;
+    }
+
+    return std::pair<vector<string>,vector<string>>( collabStr, futureStr );
 
 }
 
