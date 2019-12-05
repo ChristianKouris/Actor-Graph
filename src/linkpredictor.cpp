@@ -6,7 +6,8 @@
  * with actors that been in the same movies and ones that have not.
  * Author: Christian Kouris
  * Email: ckouris@ucsd.edu
- * Sources: loadFromFile implementation, std::vector docs, std::pair docs
+ * Sources: loadFromFile implementation, std::vector docs, std::pair docs,
+ *          docs for ofstream and ifstream
  */
 
 #include "ActorGraph.hpp"
@@ -63,14 +64,14 @@ int main( int argc, char* argv[] ) {
 
         if( collabList.size() != 0 ) {
             string collabStr = collabList[0];
-            for( unsigned int i = 1; i < collabStr.size(); i++ ) {
+            for( unsigned int i = 1; i < collabList.size(); i++ ) {
                 collabStr + '\t' + collabList[i];
             }
             outfilecollab << collabStr << endl;
         }
         if( futureList.size() != 0 ) {
             string futureStr = futureList[0];
-            for( unsigned int i = 1; i < futureStr.size(); i++ ) {
+            for( unsigned int i = 1; i < futureList.size(); i++ ) {
                 futureStr + '\t' + futureList[i];
             }
             outfilepred << futureStr << endl;

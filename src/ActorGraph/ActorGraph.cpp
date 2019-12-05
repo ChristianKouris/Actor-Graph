@@ -1,4 +1,7 @@
-/*
+/* This file contains the method implementation for the ActorGraph class. 
+ * This class is used to build a graph that has actors as vertices and 
+ * movies as edges. This graph is used to find connections between actors
+ * and to find future links that may happen.
  * Author: Christian Kouris
  * Email: ckouris@ucsd.edu
  * Sources: cplusplus documentation for: unordered_map, queue, string, vector,
@@ -223,6 +226,15 @@ string ActorGraph::findClosestActors(string actorStart, string actorEnd) {
 
 }
 
+/**
+ * This method uses Dijkstra's Algoritm to find the closest actor
+ * and movie chain from actorStart to actorEnd. The difference between
+ * This algorithm and the findClosestActors alorithm is that the graph
+ * for this one is weighted by movie age, so we can't effectively use
+ * a Breadth First Search, we have to use Dijkstra's.
+ * Parameter: actorStart - the starting actor in the actor/movie chain
+ * Parameter: actorEnd - the ending actor in the actor/movie chain
+ */
 string ActorGraph::findWeightedActors(string actorStart, string actorEnd) {
 
     if( actorMap.find(actorStart) == actorMap.end() ) { return ""; }

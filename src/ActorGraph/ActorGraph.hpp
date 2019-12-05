@@ -62,6 +62,17 @@ class ActorGraph {
     string findClosestActors(string actorStart, string actorEnd);
 
     /**
+     * This method uses Dijkstra's Algoritm to find the closest actor
+     * and movie chain from actorStart to actorEnd. The difference between
+     * This algorithm and the findClosestActors alorithm is that the graph
+     * for this one is weighted by movie age, so we can't effectively use
+     * a Breadth First Search, we have to use Dijkstra's.
+     * Parameter: actorStart - the starting actor in the actor/movie chain
+     * Parameter: actorEnd - the ending actor in the actor/movie chain
+     */
+    string findWeightedActors(string actorStart, string actorEnd);
+    
+    /**
      * This method predicts what future links the given actor might have with
      * all of the other actors in the graph. The method seaches all of the
      * actors that have worked on the same movies as the input actor and makes
@@ -71,9 +82,6 @@ class ActorGraph {
      * Parameter: actor - the actor which we want to find all of the links of
      */
     pair<vector<string>, vector<string>> getPredictedLinks( string actor );
-    
-    string findWeightedActors(string actorStart, string actorEnd);
-
     
 };
 

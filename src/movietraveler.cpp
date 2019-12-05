@@ -2,7 +2,7 @@
  * TODO
  * Author: Christian Kouris
  * Email: ckouris@ucsd.edu
- * Sources: loadFromFile implementation, std::vector docs, std::pair docs
+ * Sources: 
  */
 
 #include "ActorGraph.hpp"
