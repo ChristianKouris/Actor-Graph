@@ -20,6 +20,17 @@ using namespace std;
  */
 int main( int argc, char* argv[] ) {
 
+    if( argc < 3 ) {
+        return 0;
+    }
+    
+    //build the graph using the first argument passed as the file
+    ActorGraph actorGraph = ActorGraph();
+    actorGraph.loadFromFile( argv[1] );
+    //open outfile and put in the header
+    ofstream outfile(argv[2]);
+    outfile << "(actor)<--[movie#@year]-->(actor)" << endl;
+
     return 0;
 
 }
