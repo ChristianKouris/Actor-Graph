@@ -374,7 +374,7 @@ pair<vector<string>, vector<string>>
     ActorNode* actorNode = actorMap.find( actor )->second;
     for( unsigned int i = 0; i < actorNode->movies.size(); i++ ) {
         MovieNode* movieNode = actorNode->movies.at(i);
-        for( unsigned int j; j < movieNode->actors.size(); j++ ) {
+        for( unsigned int j = 0; j < movieNode->actors.size(); j++ ) {
             ActorNode* tmp = movieNode->actors.at(j);
             if( tmp->links == 0 ) {
                 collabActors.push_back( tmp );
