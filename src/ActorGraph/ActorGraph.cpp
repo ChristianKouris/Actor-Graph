@@ -150,7 +150,7 @@ string ActorGraph::findClosestActors(string actorStart, string actorEnd) {
             if( curMov->checked == true ) { continue; }
             
             //add the actors in the movies to the queue
-            for( unsigned int j = 0; j < curMov->actors.size(); i++ ) {
+            for( unsigned int j = 0; j < curMov->actors.size(); j++ ) {
                 if( curMov->actors.at(j)->checked == true ) { continue; }
                 curMov->actors.at(j)->previous = curMov;
                 actorQueue.push( curMov->actors.at(j) );
@@ -269,7 +269,7 @@ string ActorGraph::findWeightedActors(string actorStart, string actorEnd) {
             if( curMov->checked == true ) { continue; }
             
             //add the actors in the movies to the queue
-            for( unsigned int j = 0; j < curMov->actors.size(); i++ ) {
+            for( unsigned int j = 0; j < curMov->actors.size(); j++ ) {
                 
                 tmpActor= curMov->actors.at(j);
                 unsigned int totalDist = curActor->dist + curMov->weight;

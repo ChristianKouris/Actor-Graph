@@ -61,7 +61,7 @@ int main( int argc, char* argv[] ) {
         vector<string> record;
         while (ss) {
             string str;
-            // get the next string before hitting a tab character and put it in 'str'
+            // get the next string before hitting a tab character
             if (!getline(ss, str, '\t')) break;
             record.push_back(str);
         }
@@ -76,13 +76,11 @@ int main( int argc, char* argv[] ) {
         //output the string based on if the graph is weighted or not
         if( isWeighted ) {
 
-            outfile << 
-                actorGraph.findWeightedActors(actorStart, actorEnd) << endl;
+        outfile << actorGraph.findWeightedActors(actorStart, actorEnd) << endl;
 
         } else {
 
-            outfile << 
-                actorGraph.findClosestActors(actorStart, actorEnd) << endl;
+        outfile << actorGraph.findClosestActors(actorStart, actorEnd) << endl;
 
         }
 
