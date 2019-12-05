@@ -1,5 +1,7 @@
 /**
- * TODO
+ * The movietraveler program finds the smallest way to connect all of the
+ * actors through their movies. It uses an algorithm called Kruskal's
+ * algorithm in order to find the connected graph with the least weight.
  * Author: Christian Kouris
  * Email: ckouris@ucsd.edu
  * Sources: 
