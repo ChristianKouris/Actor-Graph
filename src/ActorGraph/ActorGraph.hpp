@@ -13,6 +13,7 @@
 #define ACTORGRAPH_HPP
 
 #include <iostream>
+#include <unordered_map>
 #include "ActorNode.hpp"
 #include "MovieNode.hpp"
 

@@ -344,6 +344,7 @@ string ActorGraph::findWeightedActors(string actorStart, string actorEnd) {
     }
     for( unsigned int i = 0; i < movieCleanup.size(); i++ ) {
         movieCleanup[i]->previous = 0;
+        movieCleanup[i]->checked = false;
     }
 
     //return the string
