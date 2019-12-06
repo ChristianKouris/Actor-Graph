@@ -267,7 +267,6 @@ string ActorGraph::findWeightedActors(string actorStart, string actorEnd) {
         for( unsigned int i = 0; i < curActor->movies.size(); i++ ) {
 
             MovieNode* curMov = curActor->movies.at(i);
-            if( curMov->checked == true ) { continue; }
             
             //add the actors in the movies to the queue
             for( unsigned int j = 0; j < curMov->actors.size(); j++ ) {
@@ -285,7 +284,6 @@ string ActorGraph::findWeightedActors(string actorStart, string actorEnd) {
             
             //set the previous actor and the checked to 1
             curMov->previous = curActor;
-            curMov->checked = true;
             movieCleanup.push_back( curMov );
 
         }
@@ -298,10 +296,10 @@ string ActorGraph::findWeightedActors(string actorStart, string actorEnd) {
         for( unsigned int i = 0; i < actorCleanup.size(); i++ ) {
             actorCleanup[i]->previous = 0;
             actorCleanup[i]->checked = false;
+            actorCleanup[i]->dist = (unsigned)-1;
         }
         for( unsigned int i = 0; i < movieCleanup.size(); i++ ) {
             movieCleanup[i]->previous = 0;
-            movieCleanup[i]->checked = false;
         }
         return "";
     }
@@ -339,10 +337,10 @@ string ActorGraph::findWeightedActors(string actorStart, string actorEnd) {
     for( unsigned int i = 0; i < actorCleanup.size(); i++ ) {
         actorCleanup[i]->previous = 0;
         actorCleanup[i]->checked = false;
+        actorCleanup[i]->dist = (unsigned)-1;
     }
     for( unsigned int i = 0; i < movieCleanup.size(); i++ ) {
         movieCleanup[i]->previous = 0;
-        movieCleanup[i]->checked = false;
     }
 
     //return the string
