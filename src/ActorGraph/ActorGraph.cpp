@@ -407,6 +407,7 @@ pair<vector<string>, vector<string>>
                 }
                 //instead of adding by one, add by cur actor # links
                 tmp->links += curActor->links;
+                futureActors.push_back( tmp );
 
             }
 
