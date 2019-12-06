@@ -371,6 +371,7 @@ pair<vector<string>, vector<string>>
     vector<MovieNode*> movieCleanup = std::vector<MovieNode*>();
     //loop through all of the actors immediately connected to the given actor
     ActorNode* actorNode = actorMap.find( actor )->second;
+    actorNode->checked = true;
     for( unsigned int i = 0; i < actorNode->movies.size(); i++ ) {
         MovieNode* movieNode = actorNode->movies.at(i);
         for( unsigned int j = 0; j < movieNode->actors.size(); j++ ) {
@@ -378,10 +379,9 @@ pair<vector<string>, vector<string>>
             if( tmp->links == 0 ) {
                 collabActors.push_back( tmp );
             }
+            tmp->checked = true;
             tmp->links++;
         }
-        movieNode->checked = true;
-        movieCleanup.push_back( movieNode );
     }
 
     //sort the list of actor nodes
@@ -395,19 +395,16 @@ pair<vector<string>, vector<string>>
         for( unsigned int j = 0; j < curActor->movies.size(); j++ ) {
 
             MovieNode* movieNode = curActor->movies.at(j);
-            if( movieNode->checked == true ) {
-                continue;
-            }
             //loop through each actor for each movie for each first gen actor
             for( unsigned int k = 0; k < movieNode->actors.size(); k++ ) {
     
                 ActorNode* tmp = movieNode->actors.at(k);
+                if( tmp->checked ) { continue; }
                 if( tmp->links == 0 ) {
                     futureActors.push_back( tmp );
                 }
                 //instead of adding by one, add by cur actor # links
                 tmp->links += curActor->links;
-                futureActors.push_back( tmp );
 
             }
 
@@ -433,14 +430,14 @@ pair<vector<string>, vector<string>>
     }
 
     //reset all the values that we've changed
+    actorNode->checked = false;
     for( unsigned int i = 0; i < collabActors.size(); i++ ) {
         collabActors[i]->links = 0;
+        collabActors[i]->checked = false;
     }
     for( unsigned int i = 0; i < futureActors.size(); i++ ) {
         futureActors[i]->links = 0;
-    }
-    for( unsigned int i = 0; i < movieCleanup.size(); i++ ) {
-        movieCleanup[i]->checked = false;
+        futureActors[i]->checked = false;
     }
 
     return std::pair<vector<string>,vector<string>>( collabStr, futureStr );
