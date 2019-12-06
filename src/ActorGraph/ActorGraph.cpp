@@ -128,6 +128,7 @@ string ActorGraph::findClosestActors(string actorStart, string actorEnd) {
     //create a queue and add the starting actor to it
     ActorNode* curActor = actorMap.find(actorStart)->second;
     queue<ActorNode*> actorQueue = std::queue<ActorNode*>();
+    curActor->checked = true;
     actorQueue.push( curActor );
 
     //create a list to clean up the movies and the actors
@@ -140,7 +141,6 @@ string ActorGraph::findClosestActors(string actorStart, string actorEnd) {
 
         //pop the curActor from the queue, set it as visited
         curActor = actorQueue.front(); actorQueue.pop();
-        curActor->checked = true;
         if( curActor->name == actorEnd ) { break; }
 
         //go through each movie and add the actors to the queue
@@ -152,6 +152,7 @@ string ActorGraph::findClosestActors(string actorStart, string actorEnd) {
             //add the actors in the movies to the queue
             for( unsigned int j = 0; j < curMov->actors.size(); j++ ) {
                 if( curMov->actors.at(j)->checked == true ) { continue; }
+                curMov->actors.at(j)->checked = true;
                 curMov->actors.at(j)->previous = curMov;
                 actorQueue.push( curMov->actors.at(j) );
                 actorCleanup.push_back( curMov->actors.at(j) );
