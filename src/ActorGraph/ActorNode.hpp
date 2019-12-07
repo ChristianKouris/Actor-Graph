@@ -37,6 +37,10 @@ class ActorNode {
     unsigned int links;
     //distance from the starting node
     unsigned int dist;
+    //the parent tree in movietraveler
+    ActorNode* parent;
+    //size of the UnionFind
+    unsigned int size;
 
     /* Constructor that initializes the ActorNode */
     ActorNode(string name) : name(name) {
@@ -45,6 +49,8 @@ class ActorNode {
         checked = false;
         links = 0;
         dist = (unsigned)-1;
+        parent = 0;
+        size = 1;
     }
 
 };

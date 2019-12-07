@@ -16,6 +16,7 @@
 #include <unordered_map>
 #include "ActorNode.hpp"
 #include "MovieNode.hpp"
+#include "UnionFind.hpp"
 
 using namespace std;
 
@@ -83,6 +84,11 @@ class ActorGraph {
      * Parameter: actor - the actor which we want to find all of the links of
      */
     pair<vector<string>, vector<string>> getPredictedLinks( string actor );
+
+    /**
+     * TODO
+     */
+    vector<string> findSmallestTree();
     
 };
 

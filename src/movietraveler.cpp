@@ -31,6 +31,15 @@ int main( int argc, char* argv[] ) {
     ofstream outfile(argv[2]);
     outfile << "(actor)<--[movie#@year]-->(actor)" << endl;
 
+    //get the vector of strings from ActorGraph
+    vector<string> output = actorGraph.findSmallestTree();
+    for( unsigned int i = 0; i < output.size(); i++ ) {
+
+        outfile << output[i] << endl;
+
+    }
+
+    outfile.close();
     return 0;
 
 }

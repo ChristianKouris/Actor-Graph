@@ -35,6 +35,8 @@ class MovieNode {
     bool checked;
     //the weight of the edge which will be 2019 - year + 1
     unsigned int weight;
+    //the connecting ActorNodes in a tree
+    vector<pair<ActorNode*,ActorNode*>> actorPairs;
 
     /* Constructor that initializes the MovieNode */
     MovieNode(string name, unsigned int year) : name(name), year(year) {
@@ -42,9 +44,15 @@ class MovieNode {
         previous = 0;
         checked = false;
         weight = 1 + 2019 - year;
+        actorPairs = std::vector<pair<ActorNode*,ActorNode*>>();
     }
 
 };
 
+struct CompareWeight {
+    bool operator()( const MovieNode* m1, const MovieNode* m2 ) {
+        return m1->weight < m2->weight;
+    }
+};
 
 #endif  // MOVIENODE_HPP

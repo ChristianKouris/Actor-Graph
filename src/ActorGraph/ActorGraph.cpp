@@ -16,6 +16,7 @@
 #include <string>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
 #include <queue>
 #include <stack>
 #include <utility>
@@ -445,6 +446,105 @@ pair<vector<string>, vector<string>>
     }
 
     return std::pair<vector<string>,vector<string>>( collabStr, futureStr );
+
+}
+
+vector<string> ActorGraph::findSmallestTree() {
+    
+    //create a forest along with an ordered set of edges
+    unordered_set<ActorNode*> forest = unordered_set<ActorNode*>();
+    auto actorMapIter = actorMap.begin();
+    while( actorMapIter != actorMap.end() ) {
+        forest.insert( actorMapIter->second );
+        actorMapIter++;
+    }
+    vector<MovieNode*> edges = std::vector<MovieNode*>();
+    auto movieMapIter = movieMap.begin();
+    while( movieMapIter != movieMap.end() ) {
+        edges.push_back( movieMapIter->second );
+        movieMapIter++;
+    }
+    std::sort( edges.begin(), edges.end(), CompareWeight() );
+    UnionFind unionFind = UnionFind();
+    //create a set to store all of the MovieNodes that have been effected
+    unordered_set<MovieNode*> treeEdge = std::unordered_set<MovieNode*>(); 
+    unsigned int numEdges = 0; unsigned int numWeights = 0;
+
+    //go trough the edges from smallest to largest weight
+    while( forest.size() > 1 ) {
+        
+        //get the lowest weighted edge
+        for( unsigned int i = 0; i < edges.size(); i++ ) {
+            
+            MovieNode* curEdge = edges[i];
+
+            //get two actors from the edge and check if they work
+            for( unsigned int j = 0; j < curEdge->actors.size(); j++ ) {
+                ActorNode* actor1 = curEdge->actors.at(j);
+                for( unsigned int k = j; k < curEdge->actors.size(); k++ ) {
+
+                    ActorNode* actor2 = curEdge->actors.at(k);
+                    if( unionFind.find(actor1) != unionFind.find(actor2) ) {
+
+                        forest.erase( actor1 );
+                        forest.erase( actor2 );
+                        ActorNode* root = unionFind.unite( actor1, actor2 );
+                        forest.insert( root );
+                        curEdge->actorPairs.push_back( 
+                            pair<ActorNode*, ActorNode*>( actor1, actor2 ));
+                        if( treeEdge.find( curEdge ) == treeEdge.end() ) {
+                            treeEdge.insert( curEdge );
+                        }
+                        numEdges++;
+                        numWeights += curEdge->weight;
+
+                    }
+
+                    if( forest.size() <= 1 ) { break; }
+
+                }
+                
+                if( forest.size() <= 1 ) { break; }
+            
+            } 
+
+            if( forest.size() <= 1 ) { break; }
+
+        }
+        
+        if( forest.size() <= 1 ) { break; }
+
+    } // end while
+
+    //now we have the tree, print out the movie nodes connected to it
+    vector<string> outVector = std::vector<string>();
+    auto edgeIter = treeEdge.begin();
+    while( edgeIter != treeEdge.end() ) {
+    
+        //derefencing iter gives movie node pointer
+        MovieNode* curEdge = *edgeIter;
+        for( unsigned int j = 0; j < curEdge->actorPairs.size(); j++ ) {
+
+            ActorNode* actor1 = curEdge->actorPairs.at(j).first;
+            ActorNode* actor2 = curEdge->actorPairs.at(j).second;
+            string outstr = "(" + actor1->name + ")<--[" + curEdge->name +
+                            "#@" + to_string(curEdge->year) + "]-->(" + 
+                            actor2->name + ")";
+            outVector.push_back( outstr );
+
+        }
+        edgeIter++;
+
+    }
+
+    string nodeStr = "#NODE CONNECTED: " + to_string((*forest.begin())->size);
+    outVector.push_back( nodeStr );
+    string edgeStr = "#EDGE CHOSEN: " + to_string( numEdges );
+    outVector.push_back( edgeStr );
+    string weightStr = "TOTAL EDGE WEIGHTS: " + to_string( numWeights );
+    outVector.push_back( weightStr );
+
+    return outVector;
 
 }
 
