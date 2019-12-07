@@ -86,7 +86,10 @@ class ActorGraph {
     pair<vector<string>, vector<string>> getPredictedLinks( string actor );
 
     /**
-     * TODO
+     * This function uses Kruskal's algorithm along with the UnionFind
+     * datastructure in order to create the smallest spanning tree given
+     * a connected graph. This program will output a vector of the
+     * strings expected to be printed out.
      */
     vector<string> findSmallestTree();
     
